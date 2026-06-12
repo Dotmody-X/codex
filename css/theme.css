@@ -383,6 +383,70 @@ svg { display: block; }
 .cx-footer p { margin: 0; font-family: var(--font-mono); font-size: 12px; }
 
 /* ============================================================
+   FLASHCARDS — révision
+   ============================================================ */
+/* Accès depuis la page langage */
+.cx-flash-cta { display: flex; align-items: center; gap: 20px; padding: 22px 24px; border: 1px solid var(--line); background: var(--paper-3); transition: 0.12s; }
+.cx-flash-cta:hover { background: var(--ink); color: var(--paper-2); transform: translate(-3px, -3px); box-shadow: var(--shadow); }
+.cx-flash-cta-ic { width: 40px; height: 40px; flex: none; padding: 8px; border: 1px solid var(--line); color: var(--violet); }
+.cx-flash-cta:hover .cx-flash-cta-ic { border-color: rgba(255,255,255,0.3); color: var(--acid); }
+.cx-flash-cta-txt { flex: 1; }
+.cx-flash-cta-txt h3 { font-family: var(--font-display); font-size: 18px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: -0.3px; }
+.cx-flash-cta-txt p { margin: 0; font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); }
+.cx-flash-cta:hover .cx-flash-cta-txt p { color: rgba(255,255,255,0.6); }
+.cx-flash-cta-arrow { width: 26px; height: 26px; flex: none; }
+
+/* Barre de mémoire */
+.cx-flash-mem { margin-bottom: 22px; }
+.cx-mem-bar { display: flex; height: 16px; border: 1px solid var(--line); background: var(--paper-3); overflow: hidden; }
+.cx-mem-seg { width: var(--w, 0%); transition: width 0.25s; }
+.cx-mem-seg.is-yes { background: var(--acid); }
+.cx-mem-seg.is-mid { background: var(--violet); }
+.cx-mem-seg.is-no { background: var(--line-soft); }
+.cx-mem-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 12px; }
+.cx-mem-tag { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); }
+.cx-mem-dot { width: 11px; height: 11px; border: 1px solid var(--ink); }
+.cx-mem-tag.is-yes .cx-mem-dot { background: var(--acid); }
+.cx-mem-tag.is-mid .cx-mem-dot { background: var(--violet); }
+.cx-mem-tag.is-no .cx-mem-dot { background: var(--paper); }
+.cx-mem-reset { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; font-family: var(--font-mono); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 1px; color: var(--ink-3); border: 1px solid var(--line); padding: 7px 12px; }
+.cx-mem-reset:hover { background: var(--red); border-color: var(--red); color: #fff; }
+.cx-mem-reset-ic { width: 14px; height: 14px; }
+
+/* La carte */
+.cx-flash-stage { display: flex; flex-direction: column; gap: 14px; }
+.cx-card3d { position: relative; display: flex; flex-direction: column; min-height: 340px; padding: 26px 28px; border: 1px solid var(--line);
+  background: var(--paper-3); cursor: pointer; transition: 0.12s; }
+.cx-card3d:hover { box-shadow: var(--shadow-sm); }
+.cx-card3d.is-flipped { cursor: default; background: var(--paper); }
+.cx-card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.cx-card-cat { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--violet); }
+.cx-card-status { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; padding: 3px 8px; border: 1px solid var(--line); }
+.cx-card-status.is-yes { background: var(--acid); color: var(--ink); }
+.cx-card-status.is-mid { background: var(--violet); color: #fff; border-color: var(--violet); }
+.cx-card-status.is-no { background: var(--red); color: #fff; border-color: var(--red); }
+.cx-card-status.is-new { color: var(--ink-3); }
+.cx-card-front { font-family: var(--font-mono); font-weight: 700; font-size: clamp(26px, 5vw, 44px); color: var(--ink); margin: auto 0; padding: 24px 0; word-break: break-word; line-height: 1.1; }
+.cx-card3d.is-flipped .cx-card-front { font-size: clamp(20px, 3.5vw, 30px); margin: 14px 0 0; padding: 0 0 14px; border-bottom: 1px solid var(--line); }
+.cx-card-hint { display: flex; align-items: center; gap: 9px; margin-top: auto; font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); }
+.cx-card-hint-ic { width: 16px; height: 16px; color: var(--violet); }
+.cx-card-back { margin-top: 16px; }
+.cx-card-def { margin: 0; font-size: 17px; line-height: 1.65; color: var(--ink); }
+.cx-card-code { margin-top: 16px; border: 1px solid var(--ink); background: var(--ink); }
+
+.cx-flash-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.cx-rate { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 16px 12px; border: 1px solid var(--ink); background: var(--paper-3); transition: 0.12s; }
+.cx-rate:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-sm); }
+.cx-rate-lbl { font-family: var(--font-display); font-size: 15px; text-transform: uppercase; letter-spacing: -0.3px; }
+.cx-rate-prob { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+.cx-rate.is-no:hover { background: var(--red); color: #fff; border-color: var(--red); }
+.cx-rate.is-mid:hover { background: var(--violet); color: #fff; border-color: var(--violet); }
+.cx-rate.is-yes:hover { background: var(--acid); color: var(--ink); }
+.cx-rate:hover .cx-rate-prob { color: inherit; opacity: 0.8; }
+.cx-flash-counter { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); text-align: center; text-transform: uppercase; letter-spacing: 1px; }
+
+/* ============================================================
    LEXIQUE
    ============================================================ */
 .cx-gloss-tools { display: flex; align-items: stretch; gap: 0; margin-bottom: 22px; border: 1px solid var(--line); }
