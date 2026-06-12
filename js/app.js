@@ -262,13 +262,12 @@
     const body = el('.cx-lang-body');
     app.appendChild(body);
 
-    // --- Arène de jeu (mise en avant) ---
-    body.appendChild(buildArena(lang));
-
-    // --- Parcours de progression ---
-    if (lang.challenges && lang.challenges.length) {
-      body.appendChild(buildParcours(lang));
-    }
+    // Chaque section est construite puis rangée ; l'insertion dans le body
+    // se fait plus bas, dans l'ordre d'affichage voulu.
+    const order = { course: null, concepts: null, reference: null, example: null, roadmap: null, resources: null };
+    const arenaSec = buildArena(lang);
+    const parcoursSec = (lang.challenges && lang.challenges.length) ? buildParcours(lang) : null;
+    const flashSec = ((lang.reference && lang.reference.length) || lang.concepts.length) ? buildFlashCta(lang) : null;
 
     // --- Concepts ---
     if (lang.concepts.length) {
@@ -284,7 +283,7 @@
         grid.appendChild(card);
       });
       sec.appendChild(grid);
-      body.appendChild(sec);
+      order.concepts = sec;
     }
 
     // --- Cours complet ---
@@ -323,7 +322,7 @@
         course.appendChild(chap);
       });
       sec.appendChild(course);
-      body.appendChild(sec);
+      order.course = sec;
     }
 
     // --- Référence classée ---
@@ -365,7 +364,7 @@
       });
       sec.appendChild(refNav);
       sec.appendChild(refBody);
-      body.appendChild(sec);
+      order.reference = sec;
     }
 
     // --- Exemple ---
@@ -388,7 +387,7 @@
       ex.appendChild(pre);
       sec.appendChild(ex);
       if (lang.example.explain) sec.appendChild(el('p.cx-example-explain', { text: lang.example.explain }));
-      body.appendChild(sec);
+      order.example = sec;
     }
 
     // --- Roadmap / objectifs ---
@@ -413,7 +412,7 @@
         road.appendChild(node);
       });
       sec.appendChild(road);
-      body.appendChild(sec);
+      order.roadmap = sec;
     }
 
     // --- Ressources ---
@@ -428,8 +427,14 @@
         ]));
       });
       sec.appendChild(list);
-      body.appendChild(sec);
+      order.resources = sec;
     }
+
+    // Ordre d'affichage : cours, savoir, référence, exemple, trajectoire,
+    // flashcards, arène, parcours, archives.
+    [order.course, order.concepts, order.reference, order.example, order.roadmap,
+      flashSec, arenaSec, parcoursSec, order.resources]
+      .forEach((s) => { if (s) body.appendChild(s); });
 
     app.appendChild(footer());
     window.scrollTo(0, 0);
@@ -593,6 +598,185 @@
   }
 
   // ============================================================
+  // FLASHCARDS — révision à répétition espacée
+  // ============================================================
+  // Probabilité de réapparition selon la maîtrise.
+  const CARD_WEIGHT = { yes: 15, mid: 65, no: 100 };
+
+  function buildDeck(lang) {
+    const deck = [];
+    (lang.reference || []).forEach((g, gi) => {
+      (g.items || []).forEach((it, ii) => {
+        deck.push({ key: 'ref|' + gi + '|' + ii, front: it.name, back: it.desc, syntax: it.syntax, cat: g.group });
+      });
+    });
+    (lang.concepts || []).forEach((c, ci) => {
+      deck.push({ key: 'con|' + ci, front: c.title, back: c.body, syntax: c.code, cat: 'Concept clé' });
+    });
+    return deck;
+  }
+
+  function deckStats(deck, id) {
+    const s = { yes: 0, mid: 0, no: 0, nw: 0, total: deck.length };
+    deck.forEach((c) => {
+      const v = Store.getCard(id, c.key);
+      if (v === 'yes') s.yes++;
+      else if (v === 'mid') s.mid++;
+      else if (v === 'no') s.no++;
+      else s.nw++;
+    });
+    return s;
+  }
+
+  // Tirage pondéré : poids = 15 / 65 / 100 selon le statut (nouvelle = 100).
+  function pickCard(deck, id, excludeKey) {
+    const weights = deck.map((c) => {
+      if (c.key === excludeKey && deck.length > 1) return 0;
+      const v = Store.getCard(id, c.key);
+      return CARD_WEIGHT[v] || 100;
+    });
+    const total = weights.reduce((a, b) => a + b, 0);
+    if (total <= 0) return deck[0];
+    let r = Math.random() * total;
+    for (let i = 0; i < deck.length; i++) { r -= weights[i]; if (r < 0) return deck[i]; }
+    return deck[deck.length - 1];
+  }
+
+  function buildFlashCta(lang) {
+    const deck = buildDeck(lang);
+    const s = deckStats(deck, lang.id);
+    const sec = el('.cx-block');
+    sec.appendChild(sectionTitle('Flashcards', 'layers',
+      'Révision active à répétition espacée : chaque carte revient selon ta maîtrise.'));
+    const cta = el('a.cx-flash-cta', { href: '#/cartes/' + lang.id });
+    cta.appendChild(el('.cx-flash-cta-ic', { html: icon('layers') }));
+    cta.appendChild(el('.cx-flash-cta-txt', null, [
+      el('h3', { text: 'Réviser ' + deck.length + ' cartes' }),
+      el('p', { text: s.yes + ' acquises · ' + s.mid + ' à revoir · ' + (s.no + s.nw) + ' à découvrir' }),
+    ]));
+    cta.appendChild(el('.cx-flash-cta-arrow', { html: icon('arrowRight') }));
+    sec.appendChild(cta);
+    return sec;
+  }
+
+  function renderCards(id) {
+    const lang = CODEX.get(id);
+    clear(app);
+    if (!lang) { app.appendChild(el('.cx-section', null, [el('p.cx-empty', { text: 'Système introuvable : ' + id }), backLink()])); return; }
+    const deck = buildDeck(lang);
+    document.body.style.setProperty('--page-accent', lang.color || '#6c30e8');
+
+    const head = el('.cx-lang-head', { style: '--accent:' + (lang.color || '#6c30e8') });
+    head.appendChild(el('a.cx-back', { href: '#/lang/' + id }, [
+      el('.cx-back-ic', { html: icon('arrowLeft') }), el('span', { text: 'Retour à ' + lang.name }),
+    ]));
+    head.appendChild(el('.cx-lang-tags', null, [
+      el('span.cx-chip.solid', { text: 'Flashcards' }),
+      el('span.cx-chip', { text: deck.length + ' cartes' }),
+    ]));
+    head.appendChild(el('h1.cx-lang-name', null, [el('span', { text: lang.name }), el('.cx-lang-abbr', { text: 'RÉVISION' })]));
+    head.appendChild(el('p.cx-lang-tag', { text: 'Note chaque carte. Acquis revient à 15%, Bof à 65%, Pas acquis à 100%.' }));
+    app.appendChild(head);
+
+    const body = el('.cx-lang-body');
+    app.appendChild(body);
+    const block = el('.cx-block');
+    const memMount = el('.cx-flash-mem');
+    const stage = el('.cx-flash-stage');
+    block.appendChild(memMount);
+    block.appendChild(stage);
+    body.appendChild(block);
+    app.appendChild(footer());
+
+    let current = null, flipped = false, reviewed = 0;
+
+    function renderMem() {
+      clear(memMount);
+      const s = deckStats(deck, id);
+      const pct = (v) => (deck.length ? (v / deck.length) * 100 : 0);
+      const bar = el('.cx-mem-bar');
+      [['yes', s.yes], ['mid', s.mid], ['no', s.no + s.nw]].forEach(([k, v]) => {
+        if (v > 0) bar.appendChild(el('.cx-mem-seg.is-' + k, { style: '--w:' + pct(v) + '%' }));
+      });
+      memMount.appendChild(bar);
+      const legend = el('.cx-mem-legend');
+      legend.appendChild(memTag('yes', 'Acquis', s.yes));
+      legend.appendChild(memTag('mid', 'Bof', s.mid));
+      legend.appendChild(memTag('no', 'Pas acquis', s.no + s.nw));
+      const reset = el('button.cx-mem-reset', null, [
+        el('.cx-mem-reset-ic', { html: icon('clock') }), el('span', { text: 'Réinitialiser la mémoire' }),
+      ]);
+      reset.addEventListener('click', () => { if (confirmReset()) { Store.resetCards(id); next(); } });
+      legend.appendChild(reset);
+      memMount.appendChild(legend);
+    }
+    function confirmReset() { return true; }
+    function memTag(k, label, n) {
+      return el('.cx-mem-tag.is-' + k, null, [el('.cx-mem-dot'), el('span', { text: label + ' · ' + n })]);
+    }
+
+    function renderCard() {
+      clear(stage);
+      if (!current) { stage.appendChild(el('.cx-empty', { text: 'Aucune carte disponible.' })); return; }
+      const st = Store.getCard(id, current.key);
+      const card = el('.cx-card3d' + (flipped ? '.is-flipped' : ''));
+      card.appendChild(el('.cx-card-top', null, [
+        el('.cx-card-cat', { text: current.cat }),
+        el('.cx-card-status.is-' + (st || 'new'), {
+          text: st === 'yes' ? 'Acquis' : st === 'mid' ? 'Bof' : st === 'no' ? 'Pas acquis' : 'Nouvelle',
+        }),
+      ]));
+      card.appendChild(el('.cx-card-front', { text: current.front }));
+      if (flipped) {
+        const back = el('.cx-card-back');
+        back.appendChild(el('p.cx-card-def', { text: current.back }));
+        if (current.syntax) {
+          const slab = el('.cx-code.cx-card-code');
+          String(current.syntax).replace(/\n$/, '').split('\n').forEach((line, i) => {
+            slab.appendChild(el('.cx-code-line', null, [
+              el('span.cx-ln', { text: String(i + 1) }), el('span.cx-lc', { html: esc(line) || '&nbsp;' }),
+            ]));
+          });
+          back.appendChild(slab);
+        }
+        card.appendChild(back);
+      } else {
+        card.appendChild(el('.cx-card-hint', null, [el('.cx-card-hint-ic', { html: icon('spark') }), el('span', { text: 'Clique pour révéler la réponse' })]));
+      }
+      card.addEventListener('click', () => { if (!flipped) { flipped = true; renderCard(); } });
+      stage.appendChild(card);
+
+      if (flipped) {
+        const actions = el('.cx-flash-actions');
+        actions.appendChild(rateBtn('no', 'Pas acquis', '100%'));
+        actions.appendChild(rateBtn('mid', 'Bof', '65%'));
+        actions.appendChild(rateBtn('yes', 'Acquis', '15%'));
+        stage.appendChild(actions);
+      }
+      stage.appendChild(el('.cx-flash-counter', { text: 'Carte ' + (reviewed + 1) + ' — ' + deck.length + ' dans le système' }));
+    }
+
+    function rateBtn(status, label, prob) {
+      const b = el('button.cx-rate.is-' + status, null, [
+        el('span.cx-rate-lbl', { text: label }),
+        el('span.cx-rate-prob', { text: 'revient ' + prob }),
+      ]);
+      b.addEventListener('click', (e) => { e.stopPropagation(); Store.setCard(id, current.key, status); reviewed++; next(); });
+      return b;
+    }
+
+    function next() {
+      flipped = false;
+      current = pickCard(deck, id, current ? current.key : null);
+      renderMem();
+      renderCard();
+    }
+
+    next();
+    window.scrollTo(0, 0);
+  }
+
+  // ============================================================
   // PAGE — Lexique du développeur
   // ============================================================
   function renderGlossary() {
@@ -690,6 +874,7 @@
     const parts = hash.split('/').filter(Boolean);
     document.body.style.removeProperty('--page-accent');
     if (parts[0] === 'lang' && parts[1]) renderLang(parts[1]);
+    else if (parts[0] === 'cartes' && parts[1]) renderCards(parts[1]);
     else if (parts[0] === 'lexique') renderGlossary();
     else renderHome();
   }

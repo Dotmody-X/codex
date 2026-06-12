@@ -62,10 +62,16 @@
       try { localStorage.setItem(KEY, JSON.stringify(this.data)); } catch (e) { /* mode privé */ }
     },
     lang(id) {
-      if (!this.data[id]) this.data[id] = { xp: 0, best: {}, done: {}, challenges: {} };
+      if (!this.data[id]) this.data[id] = { xp: 0, best: {}, done: {}, challenges: {}, cards: {} };
       if (!this.data[id].challenges) this.data[id].challenges = {};
+      if (!this.data[id].cards) this.data[id].cards = {};
       return this.data[id];
     },
+    // --- Mémoire des flashcards : 'yes' (acquis), 'mid' (bof), 'no' (pas acquis) ---
+    cardState(id) { return this.lang(id).cards; },
+    getCard(id, key) { return this.lang(id).cards[key]; },
+    setCard(id, key, status) { this.lang(id).cards[key] = status; this.save(); },
+    resetCards(id) { this.lang(id).cards = {}; this.save(); },
     challengeState(id) {
       return this.lang(id).challenges;
     },

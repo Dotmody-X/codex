@@ -26,6 +26,8 @@ C'est un site **statique sans build** (HTML/CSS/JS purs, balises `<script>` clas
 - **Cours complets** : 90 chapitres / 270 leçons au total (un cours progressif par langage).
 - **Référence classée** : 1470 éléments essentiels (balises, propriétés, mots-clés, méthodes…) rangés par catégorie.
 - **Parcours de progression** : 5 défis concrets par langage (75 au total), débloqués en séquence, avec XP et progression persistées.
+- **Flashcards à répétition espacée** : toutes les notions de chaque langage en cartes, avec une « mémoire » persistée. Une carte revient selon sa maîtrise : Acquis 15%, Bof 65%, Pas acquis 100%.
+- **Lexique du développeur** : 93 termes complexes expliqués simplement, avec recherche.
 - **342 défis jouables** répartis en 4 formats par langage :
   - **Interrogatoire** (QCM de connaissances)
   - **Oracle** (prédire la sortie d'un extrait de code)
