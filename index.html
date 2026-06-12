@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CODEX — La bible du développeur</title>
+  <meta name="description" content="Base de connaissances pour développeurs : tous les langages, hiérarchisés, expliqués, et transformés en mini-jeux. Frontend, backend, données, systèmes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2319d3ff' stroke-width='1.5'%3E%3Cpath d='M4 7l8-4 8 4v10l-8 4-8-4z'/%3E%3Cpath d='M12 3v18'/%3E%3Cpath d='M4 7l8 4 8-4'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <div class="cx-bg" aria-hidden="true">
+    <div class="cx-bg-grid"></div>
+    <div class="cx-bg-glow cx-bg-glow-a"></div>
+    <div class="cx-bg-glow cx-bg-glow-b"></div>
+    <div class="cx-bg-noise"></div>
+  </div>
+
+  <div class="cx-edge-label" aria-hidden="true">// BASE_DE_CONNAISSANCES — DEV PROTOCOL</div>
+
+  <header class="cx-nav">
+    <a class="cx-nav-brand" href="#/">
+      <span class="cx-nav-logo" id="nav-logo"></span>
+      <span class="cx-nav-word">CODEX<b class="cx-cursor">_</b></span>
+    </a>
+    <nav class="cx-nav-links">
+      <a href="#/">INDEX</a>
+      <a href="#/" data-nav="grid-section">DISCIPLINES</a>
+      <a href="#/" data-nav="hierarchie">HIÉRARCHIE</a>
+      <a href="#/lexique">LEXIQUE</a>
+    </nav>
+    <div class="cx-nav-sys">
+      <div class="cx-sys-box">
+        <span class="cx-sys-lbl">SYS.TIME</span>
+        <span class="cx-sys-val" id="nav-clock">--:--:--</span>
+        <span class="cx-sys-lbl">UTC+0</span>
+      </div>
+      <span class="cx-nav-xp" id="nav-xp">0 XP</span>
+      <a class="cx-nav-cta" href="#/lang/javascript">COMMENCER<span class="cx-nav-cta-ic" id="cta-ic"></span></a>
+    </div>
+  </header>
+
+  <main id="app"><!-- rendu par js/app.js --></main>
+
+  <footer class="cx-statusbar" aria-hidden="true">
+    <span class="cx-status-item"><i class="cx-status-dot"></i>CONNEXION SÉCURISÉE</span>
+    <span class="cx-status-item cx-status-access">&gt; ACCÈS AUTORISÉ_</span>
+    <span class="cx-status-item">SCN:0042 // NODE: CODEX_01</span>
+  </footer>
+
+  <!-- Noyau -->
+  <script src="js/core.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/games.js"></script>
+
+  <!-- Données : fiches de langages (chaque fichier appelle CODEX.register) -->
+  <script src="js/data/html.js"></script>
+  <script src="js/data/css.js"></script>
+  <script src="js/data/javascript.js"></script>
+  <script src="js/data/typescript.js"></script>
+  <script src="js/data/python.js"></script>
+  <script src="js/data/ruby.js"></script>
+  <script src="js/data/php.js"></script>
+  <script src="js/data/sql.js"></script>
+  <script src="js/data/nodejs.js"></script>
+  <script src="js/data/react.js"></script>
+  <script src="js/data/go.js"></script>
+  <script src="js/data/java.js"></script>
+  <script src="js/data/c.js"></script>
+  <script src="js/data/cpp.js"></script>
+  <script src="js/data/rust.js"></script>
+
+  <!-- Extensions : cours complets + références classées (CODEX.extend) -->
+  <script src="js/data-ext/html.js"></script>
+  <script src="js/data-ext/css.js"></script>
+  <script src="js/data-ext/javascript.js"></script>
+  <script src="js/data-ext/typescript.js"></script>
+  <script src="js/data-ext/python.js"></script>
+  <script src="js/data-ext/ruby.js"></script>
+  <script src="js/data-ext/php.js"></script>
+  <script src="js/data-ext/sql.js"></script>
+  <script src="js/data-ext/nodejs.js"></script>
+  <script src="js/data-ext/react.js"></script>
+  <script src="js/data-ext/go.js"></script>
+  <script src="js/data-ext/java.js"></script>
+  <script src="js/data-ext/c.js"></script>
+  <script src="js/data-ext/cpp.js"></script>
+  <script src="js/data-ext/rust.js"></script>
+
+  <!-- Défis de progression (5 par langage) -->
+  <script src="js/challenges.js"></script>
+
+  <!-- Lexique du développeur -->
+  <script src="js/glossary.js"></script>
+
+  <!-- Application -->
+  <script src="js/app.js"></script>
+  <script>
+    // Chrome de l'interface : logo, icône CTA, horloge système, XP, navigation interne.
+    (function () {
+      var logo = document.getElementById('nav-logo');
+      if (logo && window.CODEX_ICON) logo.innerHTML = window.CODEX_ICON('logo');
+      var ctaIc = document.getElementById('cta-ic');
+      if (ctaIc && window.CODEX_ICON) ctaIc.innerHTML = window.CODEX_ICON('arrowRight');
+
+      function refreshXp() {
+        var n = document.getElementById('nav-xp');
+        if (n && window.CX) n.textContent = window.CX.Store.totalXp() + ' XP';
+      }
+      refreshXp();
+      window.addEventListener('hashchange', refreshXp);
+      document.addEventListener('click', function () { setTimeout(refreshXp, 50); });
+
+      // Horloge système (mono chrome).
+      function pad(n) { return n < 10 ? '0' + n : '' + n; }
+      function tick() {
+        var c = document.getElementById('nav-clock');
+        if (!c) return;
+        var d = new Date();
+        c.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+      }
+      tick();
+      setInterval(tick, 1000);
+
+      // Navigation interne : revient à l'index puis défile vers la section.
+      document.querySelectorAll('[data-nav]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var id = a.getAttribute('data-nav');
+          function go() { var el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth' }); }
+          if (location.hash && location.hash !== '#/' && location.hash !== '#') {
+            location.hash = '#/';
+            setTimeout(go, 90);
+          } else { go(); }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
