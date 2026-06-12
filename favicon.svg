@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Codex">
-  <rect width="512" height="512" fill="#0d0d0b"/>
-  <g transform="translate(96 96) scale(13.3333)">
+  <rect width="512" height="512" fill="#e7e7df"/>
+  <g transform="scale(21.3333)">
     <polygon points="4,7 12,3 20,7 12,11" fill="#c8f51a"/>
     <polygon points="4,7 12,11 12,21 4,17" fill="#6c30e8"/>
     <polygon points="20,7 12,11 12,21 20,17" fill="#4a1fad"/>
