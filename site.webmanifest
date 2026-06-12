@@ -1,0 +1,21 @@
+{
+  "name": "Codex — La bible du développeur",
+  "short_name": "Codex",
+  "description": "Base de connaissances pour développeurs : langages hiérarchisés, cours complets, références classées, mini-jeux, flashcards et lexique.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d0d0b",
+  "theme_color": "#e7e7df",
+  "categories": ["education", "developer", "productivity"],
+  "icons": [
+    { "src": "favicon.svg", "type": "image/svg+xml", "sizes": "any" },
+    { "src": "icons/icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any" },
+    { "src": "icons/icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any" },
+    { "src": "icons/icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "maskable" },
+    { "src": "icons/icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
+  ]
+}
